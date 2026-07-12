@@ -1,5 +1,5 @@
 /* ============================================================
-   Minyar's Garden Quest — app core
+   Mannou's Garden Quest — app core
    Scenes: title → intro → hub ⇄ mini-games → ending
    ============================================================ */
 
@@ -8,30 +8,30 @@
 var SAVE_KEY = 'mgq_save_v1';
 
 var RANDOM_MSGS = [
-  "You're adorable.",
-  'You make me smile.',
-  "You're my favorite person.",
-  'Stay with me forever.',
-  'I love your smile.',
-  "You're my safe place.",
-  'Thank you for existing.',
-  'You make my world bloom.'
+  'You’re adorable. It’s honestly unfair.',
+  'One smile from you fixes my whole day.',
+  'You’re my favorite person. It’s not even close.',
+  'Stay with me forever, okay? Deal.',
+  'That little smile of yours? My favorite thing.',
+  'You’re my safe place. Always have been.',
+  'Thank you for existing. Really, truly.',
+  'Wherever you are, that’s where things bloom.'
 ];
 
 var MOON_LINES = [
-  "I knew you'd find this...",
-  "You're curious...",
-  "That's one of the things I love about you. ❤️"
+  'I knew you’d find this, you curious little explorer…',
+  'You never just walk past a mystery, do you?',
+  'That’s one of the million things I love about you. ❤️'
 ];
 
 var LETTER_PARAS = [
-  'Dear Minyar,',
-  'Every flower in this garden bloomed because of you.',
-  'Just like my happiest memories.',
-  'Thank you for making my life softer, brighter, happier, and more beautiful every single day.',
-  'Whenever life feels difficult, remember that somewhere there will always be a little garden where every flower blooms because you smiled.',
-  'I hope this tiny adventure reminds you how deeply loved you are.',
-  'I love you more than words could ever explain.',
+  'Dear Mannou,',
+  'I made you a garden. It’s a small one, and it lives inside a phone — but every single flower in it bloomed because of you. Which, if I’m honest, is exactly how my life works too.',
+  'You make things softer. Mornings. Bad days. Me.',
+  'I don’t always find the right words when you’re looking at me, so I hid them here, in the heart of a garden:',
+  'Whenever life feels heavy, come back to this little place. Here, every flower blooms just because you smiled. It always will.',
+  'I hope this tiny adventure reminded you how ridiculously, deeply loved you are.',
+  'I love you more than words could ever explain — this whole game is just me trying anyway.',
   '❤️'
 ];
 
@@ -214,12 +214,24 @@ var UI = (function(){
   }
 
   function gameIntro(i, onStart){
-    card({
+    var steps = '';
+    GAME_HOWTO[i].forEach(function(row, k){
+      steps += '<div class="gi-step" style="animation-delay:' + (0.15 + k * 0.13) + 's">' +
+        '<span class="gi-emoji">' + row[0] + '</span>' +
+        '<span class="gi-text">' + row[1] + '</span></div>';
+    });
+    var el = card({
       icon: GAME_ICONS[i],
       title: GAME_TITLES[i],
-      text: GAME_DESCS[i],
       buttons: [{ label: 'Start 🌷', cb: onStart }]
     });
+    var actions = el.querySelector('.card-actions');
+    var block = document.createElement('div');
+    block.innerHTML =
+      '<div class="gi-flavor">' + GAME_FLAVOR[i] + '</div>' +
+      '<div class="gi-steps">' + steps + '</div>';
+    el.insertBefore(block, actions);
+    return el;
   }
 
   function winCard(idx, msg, btnLabel, cb){
@@ -297,10 +309,15 @@ var UI = (function(){
     w.className = 'title-wrap';
     w.innerHTML =
       '<div class="title-fly">' + butterflySVG() + '</div>' +
-      '<div class="title-main">Minyar’s<br>Garden Quest</div>' +
-      '<div class="title-sub">🌸 a tiny adventure, made with love 🌸</div>';
+      '<div class="title-main">Mannou’s<br>Garden Quest</div>' +
+      '<div class="title-orn"><svg viewBox="0 0 120 14">' +
+        '<path d="M4 7 Q30 1 56 7" fill="none" stroke="#d896b6" stroke-width="1.6" stroke-linecap="round"/>' +
+        '<path d="M64 7 Q90 13 116 7" fill="none" stroke="#d896b6" stroke-width="1.6" stroke-linecap="round"/>' +
+        '<path d="M60 11.5 C56.5 9 55.3 6.7 56.6 5 C57.7 3.6 59.4 4 60 5.5 C60.6 4 62.3 3.6 63.4 5 C64.7 6.7 63.5 9 60 11.5 Z" fill="#e26d9e"/>' +
+      '</svg></div>' +
+      '<div class="title-sub">a tiny adventure, grown with love</div>';
     var btn = document.createElement('button');
-    btn.className = 'btn big';
+    btn.className = 'btn big shimmer';
     btn.textContent = App.save.intro ? 'Continue 🌸' : 'Begin 🌸';
     btn.addEventListener('click', function(){
       Sfx.unlock();
@@ -311,7 +328,7 @@ var UI = (function(){
     w.appendChild(btn);
     var foot = document.createElement('div');
     foot.className = 'title-foot';
-    foot.textContent = 'for Minyar ❤️';
+    foot.textContent = 'for Mannou ❤️';
     w.appendChild(foot);
     overlay.appendChild(w);
   }
@@ -321,7 +338,7 @@ var UI = (function(){
   function showEndingTitle(){
     var el = document.createElement('div');
     el.className = 'ending-title';
-    el.textContent = 'Bloomed by Minyar ❤️';
+    el.textContent = 'Bloomed by Mannou ❤️';
     document.getElementById('ui').appendChild(el);
     requestAnimationFrame(function(){
       requestAnimationFrame(function(){ el.classList.add('show'); });
@@ -394,8 +411,12 @@ var UI = (function(){
     el.className = 'finale';
     var txt = document.createElement('div');
     txt.className = 'finale-text';
-    txt.textContent = 'Thank you for playing, Minyar.';
+    txt.textContent = 'Thank you for playing, Mannou.';
     el.appendChild(txt);
+    var sub = document.createElement('div');
+    sub.className = 'finale-sub';
+    sub.textContent = '…now come collect your real hug.';
+    el.appendChild(sub);
     var btn = document.createElement('button');
     btn.className = 'btn';
     btn.textContent = 'Return to the garden 🌸';
@@ -435,30 +456,65 @@ var UI = (function(){
 
 var titleScene = {
   name: 'title',
+  t: 0,
+  flap: 0,
+  PLANTS: [
+    [0.08, 0.985, 24, 0, 1], [0.2, 0.955, 18, 2, 0], [0.33, 0.99, 28, 4, 2],
+    [0.5, 0.965, 21, 1, 3], [0.66, 0.99, 26, 5, 0], [0.8, 0.955, 19, 3, 1],
+    [0.93, 0.985, 25, 0, 0]
+  ],
   enter: function(){
-    FX.ambient = 10;
+    this.t = 0;
+    FX.ambient = 14;
     UI.setBlossoms(App.save.b);
     UI.showTitle(function(){
       App.go(App.save.intro ? 'hub' : 'intro');
     });
   },
   exit: function(){},
-  update: function(){},
+  update: function(dt){
+    this.t += dt;
+    this.flap += dt * 11;
+  },
   pointer: function(){},
   draw: function(ctx){
     var prog = App.progress() / 5;
-    Art.background(ctx, App, App.t, prog);
-    // a couple of foreground plants framing the title
     var W = App.W, H = App.H;
-    Art.plant(ctx, { x: W * 0.13, y: H * 0.97, size: 26, col: FLOWER_COLORS[0], bloom: prog > 0 ? 1 : 0.0, t: App.t, phase: 0 });
-    Art.plant(ctx, { x: W * 0.88, y: H * 0.99, size: 30, col: FLOWER_COLORS[1], bloom: prog > 0.3 ? 1 : 0.0, t: App.t, phase: 2 });
-    Art.plant(ctx, { x: W * 0.72, y: H * 0.95, size: 20, col: FLOWER_COLORS[2], bloom: prog > 0.5 ? 1 : 0.0, t: App.t, phase: 4 });
-    Art.glow(ctx, W / 2, H * 0.4, Math.min(W, H) * 0.5, '#fff2d9', 0.35);
+    Art.background(ctx, App, App.t, prog, { fireflies: true });
+
+    // a whole flower bed blooming in, one by one
+    for (var i = 0; i < this.PLANTS.length; i++){
+      var p = this.PLANTS[i];
+      var bloom = easeOutCubic(clamp((this.t - 0.4 - i * 0.22) / 0.9, 0, 1));
+      Art.plant(ctx, {
+        x: W * p[0], y: H * p[1], size: p[2] * Math.min(W / 390, 1.15),
+        col: FLOWER_COLORS[p[3]], colIdx: p[3], sprite: true,
+        species: p[4],
+        bloom: bloom, t: App.t, phase: i * 1.4, stem: 1.9
+      });
+    }
+
+    // two butterflies circling the title
+    for (i = 0; i < 2; i++){
+      var dir = i === 0 ? 1 : -1;
+      var a = App.t * 0.4 * dir + i * Math.PI;
+      var bx = W / 2 + Math.cos(a) * W * 0.34;
+      var by = H * 0.3 + Math.sin(a * 1.7) * H * 0.07;
+      Art.drawButterfly(ctx, {
+        x: bx, y: by,
+        angle: Math.cos(a) * dir >= 0 ? 0.4 * dir : -0.4 * dir,
+        flap: this.flap + i * 2, size: 13, col: BFLY_COLORS[i === 0 ? 0 : 2]
+      });
+    }
+
+    Art.glow(ctx, W / 2, H * 0.38, Math.min(W, H) * 0.5, '#fff2d9', 0.35);
+    Art.foreground(ctx, W, H, App.t);
+    Art.vignette(ctx, W, H);
   }
 };
 
 /* ============================================================
-   Intro scene — the butterfly welcomes Minyar
+   Intro scene — the butterfly welcomes Mannou
    ============================================================ */
 
 var introScene = {
@@ -480,9 +536,9 @@ var introScene = {
     if (!this.dlgStarted && this.t > 1.6){
       this.dlgStarted = true;
       UI.dialogue([
-        'Welcome, Minyar.',
-        'This garden has been waiting for you.',
-        'Restore its flowers and discover the secret hidden at its heart.'
+        'Welcome, Mannou. Yes — you. We’ve been waiting.',
+        'Long ago, every flower here fell asleep… waiting for one particular smile to wake it.',
+        'Wander the garden, wake the flowers… and find the secret sleeping at its heart.'
       ], function(){
         App.save.intro = 1;
         App.persist();
@@ -599,8 +655,8 @@ var hubScene = {
       this.dlgTimer -= dt;
       if (this.dlgTimer <= 0){
         UI.dialogue([
-          'The last flower has bloomed...',
-          "Can you feel it, Minyar? The garden's heart is awakening."
+          'Mannou… look. The last flower just opened its eyes.',
+          'Can you hear it? The garden’s heart has started to beat. Come with me.'
         ], function(){
           App.go('ending');
         });
@@ -651,6 +707,8 @@ var hubScene = {
         x: frac[0] * W, y: frac[1] * H,
         size: 13 + (i % 3) * 3,
         col: FLOWER_COLORS[i % FLOWER_COLORS.length],
+        colIdx: i % FLOWER_COLORS.length, sprite: true,
+        species: i % 4,
         bloom: db, t: App.t, phase: i * 1.7,
         stem: 1.7, noGlow: true
       });
@@ -664,7 +722,8 @@ var hubScene = {
       p = this.questPos(i);
       Art.plant(ctx, {
         x: p.x, y: p.gy, size: p.size,
-        col: FLOWER_COLORS[i],
+        col: FLOWER_COLORS[i], colIdx: i, sprite: true,
+        species: QUEST_SPECIES[i],
         bloom: blooms[i], t: App.t, phase: i * 2.1
       });
       if (opts.labels !== false){
@@ -679,7 +738,7 @@ var hubScene = {
   draw: function(ctx){
     var W = App.W, H = App.H;
     var prog = App.progress() / 5;
-    Art.background(ctx, App, App.t, prog);
+    Art.background(ctx, App, App.t, prog, { fireflies: prog > 0.15 });
 
     var moon = this.moonPos();
     Art.drawMoon(ctx, moon.x, moon.y, 46, !!App.save.secret, App.t);
@@ -711,8 +770,8 @@ var hubScene = {
     var bx, by;
     if (allDone && App.save.ending){
       var hp2 = this.heartPos();
-      bx = hp2.x + Math.sin(App.t * 0.8) * 30;
-      by = hp2.y - 52 + Math.sin(App.t * 1.3) * 8;
+      bx = hp2.x + Math.sin(App.t * 0.8) * 42;
+      by = hp2.y + 46 + Math.sin(App.t * 1.3) * 8;
     } else {
       bx = W * (0.5 + 0.3 * Math.sin(App.t * 0.23));
       by = App.safeTop + H * 0.24 + H * 0.045 * Math.sin(App.t * 0.31 + 1);
@@ -851,7 +910,11 @@ var endingScene = {
     }
     // pre-warm the sprite cache so the bloom wave never stutters
     for (var c = 0; c < FLOWER_COLORS.length; c++){
-      for (var q = 0; q <= 10; q++) Art.flowerSprite(c, q, 96);
+      for (var q = 0; q <= 10; q++){
+        Art.flowerSprite(c, q, 96, 0);
+        Art.flowerSprite(c, q, 96, 1);
+        Art.flowerSprite(c, q, 96, 3);
+      }
     }
     Sfx.bloom();
   },
@@ -862,6 +925,7 @@ var endingScene = {
       hx: hx, hy: hy,
       size: rand(11, 18),
       colIdx: randi(0, FLOWER_COLORS.length - 1),
+      species: pick([0, 0, 1, 3]),
       delay: 0.5 + dist * 2.4 + rand(0, 0.4),
       rot: rand(-0.5, 0.5)
     });
@@ -925,7 +989,7 @@ var endingScene = {
 
   draw: function(ctx){
     var W = App.W, H = App.H;
-    Art.background(ctx, App, App.t, 1);
+    Art.background(ctx, App, App.t, 1, { fireflies: true });
 
     var scale = lerp(1.75, 1, easeInOut(Math.min(1, this.t / 7)));
     var cx = W / 2, cy = H * 0.44;
@@ -944,7 +1008,7 @@ var endingScene = {
       var f = this.flowers[i];
       var bloom = clamp((this.t - f.delay) / 1.1, 0, 1);
       var q = Math.round(bloom * 10);
-      var spr = Art.flowerSprite(f.colIdx, q, 96);
+      var spr = Art.flowerSprite(f.colIdx, q, 96, f.species);
       var ds = f.size * 2.5;
       ctx.drawImage(spr, f.hx * R - ds / 2, f.hy * R - ds / 2, ds, ds);
     }
@@ -1054,11 +1118,26 @@ var endingScene = {
 
   /* ---------- main loop ---------- */
 
+  /* Auto quality: sample the real frame rate between t=2s and t=6s.
+     On weak devices we quietly drop the costliest decorative layers
+     (god rays, bokeh foreground, some grass/fireflies) to stay smooth. */
+  var perfFrames = 0, perfTime = 0, perfDone = false;
+  function samplePerf(dt){
+    if (perfDone || App.t < 2) return;
+    perfFrames++;
+    perfTime += dt;
+    if (App.t >= 6){
+      perfDone = true;
+      if (perfFrames / perfTime < 40) Art.lowQuality = true;
+    }
+  }
+
   var last = performance.now();
   function frame(nowT){
     var dt = Math.min(0.05, (nowT - last) / 1000);
     last = nowT;
     App.t += dt;
+    samplePerf(dt);
 
     if (App.scene){
       if (App.scene.update) App.scene.update(dt);

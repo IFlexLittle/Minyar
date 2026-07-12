@@ -1,5 +1,5 @@
 /* ============================================================
-   Minyar's Garden Quest — styles
+   Mannou's Garden Quest — styles
    ============================================================ */
 
 :root{
@@ -182,8 +182,46 @@ body[data-scene="ending"] #blossomBar{ opacity:0; }
   display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
 }
 
+/* "how to play" blocks inside game intro cards */
+.gi-flavor{
+  font-family:var(--font-hand);
+  font-size:17px;
+  color:#bb7fa2;
+  margin:2px 0 14px;
+}
+.gi-steps{
+  display:flex; flex-direction:column; gap:9px;
+  text-align:left;
+  background:rgba(249,222,232,.35);
+  border-radius:16px;
+  padding:12px 14px;
+}
+.gi-step{
+  display:flex; align-items:center; gap:11px;
+  animation:stepIn .5s cubic-bezier(.2,1.2,.4,1) both;
+}
+@keyframes stepIn{
+  from{ opacity:0; transform:translateX(-12px); }
+  to{ opacity:1; transform:translateX(0); }
+}
+.gi-emoji{
+  flex:0 0 30px; width:30px; height:30px;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(255,252,246,.9);
+  border-radius:50%;
+  font-size:16px;
+  box-shadow:0 2px 6px rgba(170,100,130,.18);
+}
+.gi-text{
+  font-size:14px;
+  line-height:1.35;
+  color:#8a5a72;
+}
+
 .btn{
   pointer-events:auto;
+  position:relative;
+  overflow:hidden;
   border:none;
   border-radius:999px;
   padding:14px 30px;
@@ -198,6 +236,18 @@ body[data-scene="ending"] #blossomBar{ opacity:0; }
   transition:transform .15s, box-shadow .15s;
 }
 .btn:active{ transform:scale(.94); box-shadow:0 4px 10px rgba(190,110,160,.35); }
+.btn.shimmer::after{
+  content:'';
+  position:absolute; top:0; bottom:0; left:-80%;
+  width:55%;
+  background:linear-gradient(105deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.5) 50%, rgba(255,255,255,0) 100%);
+  transform:skewX(-18deg);
+  animation:btnShimmer 3.4s ease-in-out infinite;
+}
+@keyframes btnShimmer{
+  0%, 55%{ left:-80%; }
+  85%, 100%{ left:130%; }
+}
 .btn.secondary{
   background:rgba(255,246,235,.95);
   color:var(--ink);
@@ -224,23 +274,43 @@ body[data-scene="ending"] #blossomBar{ opacity:0; }
 }
 .title-main{
   font-family:var(--font-hand);
-  font-size:clamp(38px,11vw,52px);
-  line-height:1.15;
+  font-size:clamp(40px,11.5vw,54px);
+  line-height:1.12;
   color:#a4547c;
   text-shadow:0 2px 0 rgba(255,255,255,.75), 0 6px 22px rgba(255,170,200,.55);
-  margin:6px 0 2px;
+  margin:8px 0 2px;
+  animation:titleBreathe 4s ease-in-out infinite;
 }
+@supports (-webkit-background-clip:text){
+  .title-main{
+    background:linear-gradient(165deg,#c4548a 12%,#9d63c9 55%,#e06d92 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    text-shadow:none;
+    filter:drop-shadow(0 2px 0 rgba(255,255,255,.75)) drop-shadow(0 8px 22px rgba(255,150,195,.6));
+  }
+}
+@keyframes titleBreathe{
+  0%,100%{ transform:scale(1); }
+  50%{ transform:scale(1.022); }
+}
+.title-orn{ width:150px; margin:2px 0 6px; opacity:.9; }
+.title-orn svg{ width:100%; display:block; }
 .title-sub{
   font-family:var(--font-hand);
   font-size:19px;
-  color:#b389a4;
+  color:#b3739c;
+  text-shadow:0 1px 0 rgba(255,255,255,.7);
   margin-bottom:30px;
 }
 .title-foot{
   margin-top:26px;
   font-family:var(--font-hand);
-  font-size:17px;
-  color:#bb8fa8;
+  font-size:18px;
+  color:#b3739c;
+  text-shadow:0 1px 0 rgba(255,255,255,.7);
+  animation:hintPulse 2.6s ease-in-out infinite;
 }
 
 /* ---------- dialogue ---------- */
@@ -341,12 +411,24 @@ body[data-scene="ending"] #blossomBar{ opacity:0; }
   transform:rotateY(180deg);
 }
 .mface.back svg{ width:78%; height:82%; }
-.mcard.matched{ pointer-events:none; }
-.mcard.matched .mcard-inner{ animation:matchGlow 1s ease-out both; }
-@keyframes matchGlow{
-  0%{ transform:rotateY(180deg) scale(1); }
-  40%{ transform:rotateY(180deg) scale(1.12); filter:drop-shadow(0 0 14px rgba(255,190,215,.95)); }
-  100%{ transform:rotateY(180deg) scale(1.03); filter:drop-shadow(0 0 6px rgba(255,190,215,.6)); }
+/* matched pairs stay face-up, wearing a soft golden halo.
+   NOTE: no `filter` or `transform` animations here — either would
+   flatten the 3D flip and hide the revealed face. */
+.mcard.matched{
+  pointer-events:none;
+  animation:matchPop .9s cubic-bezier(.2,1.5,.4,1) both;
+}
+@keyframes matchPop{
+  0%{ transform:scale(1); }
+  45%{ transform:scale(1.1); }
+  100%{ transform:scale(1.03); }
+}
+.mcard.matched .mface.back{
+  animation:matchedIdle 2.4s ease-in-out infinite;
+}
+@keyframes matchedIdle{
+  0%,100%{ box-shadow:0 0 0 2.5px rgba(255,205,130,.9), 0 0 12px rgba(255,195,130,.6), 0 6px 16px rgba(160,90,125,.25); }
+  50%{ box-shadow:0 0 0 2.5px rgba(255,215,150,1), 0 0 24px rgba(255,200,135,.95), 0 6px 16px rgba(160,90,125,.25); }
 }
 
 /* ---------- ending: big title ---------- */
@@ -494,6 +576,13 @@ body[data-scene="ending"] #blossomBar{ opacity:0; }
   text-align:center;
   padding:0 30px;
   text-shadow:0 2px 0 rgba(255,255,255,.8);
+}
+.finale-sub{
+  font-family:var(--font-hand);
+  font-size:19px;
+  color:#bb7fa2;
+  margin-top:-10px;
+  text-shadow:0 1px 0 rgba(255,255,255,.7);
 }
 .finale .btn{ opacity:0; transition:opacity 1.2s ease; }
 .finale .btn.show{ opacity:1; }

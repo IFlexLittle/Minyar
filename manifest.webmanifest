@@ -1,7 +1,7 @@
 {
-  "name": "Minyar's Garden Quest",
-  "short_name": "Minyar's Garden",
-  "description": "A tiny enchanted garden adventure, made with love for Minyar.",
+  "name": "Mannou's Garden Quest",
+  "short_name": "Mannou's Garden",
+  "description": "A tiny enchanted garden adventure, made with love for Mannou.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

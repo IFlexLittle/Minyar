@@ -1,6 +1,6 @@
-/* Minyar's Garden Quest — service worker (offline support) */
+/* Mannou's Garden Quest — service worker (offline support) */
 
-var CACHE = 'mgq-v1';
+var CACHE = 'mgq-v2';
 var ASSETS = [
   './',
   './index.html',

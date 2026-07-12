@@ -1,5 +1,5 @@
 /* ============================================================
-   Minyar's Garden Quest — audio engine
+   Mannou's Garden Quest — audio engine
    Everything is synthesized with the Web Audio API, so the game
    needs no audio files and works offline instantly.
    ============================================================ */

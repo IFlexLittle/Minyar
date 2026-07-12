@@ -1,5 +1,5 @@
 /* ============================================================
-   Minyar's Garden Quest — the five mini-games
+   Mannou's Garden Quest — the five mini-games
    Each scene implements: enter(), exit(), update(dt), draw(ctx),
    pointer(type, x, y)  — and reports victory through WinFX.
    ============================================================ */
@@ -8,22 +8,42 @@
 
 var GAME_TITLES = ['Butterfly Chase', 'Petal Dash', 'Flower Memory', 'Bee Rescue', 'Bloom Challenge'];
 var GAME_ICONS  = ['🦋', '🌸', '🌷', '🐝', '✨'];
-var GAME_DESCS  = [
-  'Catch 15 glowing butterflies!\nTap them gently before they flutter away.',
-  'Glide left and right to catch 30 pink petals — and let the brown leaves drift past! You have three hearts.',
-  'Find all six matching flower pairs.\nTake your time — the garden is patient.',
-  'A little bee lost her way!\nGuide her through the hedges to the flower with your finger.',
-  'Watch the flowers light up, then repeat their melody.\nFive rounds to the final blossom!'
+var GAME_FLAVOR = [
+  'The garden’s butterflies came out to play with you.',
+  'A warm breeze is shaking the blossom tree…',
+  'The flowers put on their best faces for you.',
+  'Somewhere in the hedges — a tiny, worried buzzing.',
+  'The five great flowers want to sing with you.'
+];
+var GAME_HOWTO = [
+  [['🦋', 'Glowing butterflies drift across the garden'],
+   ['👆', 'Tap them gently to catch their light'],
+   ['✨', 'Catch 15 and the first flower wakes up']],
+  [['🌸', 'Pink petals tumble down from the sky'],
+   ['👉', 'Drag left & right — catch them in your blossom'],
+   ['🍂', 'Let the brown leaves pass. You have 3 hearts!']],
+  [['🌷', 'Twelve cards hide six flower pairs'],
+   ['👆', 'Flip any two cards at a time'],
+   ['💞', 'Matched pairs stay in bloom — find them all']],
+  [['🐝', 'A little bee has lost her way home'],
+   ['👆', 'Touch and drag — she follows your finger'],
+   ['🌼', 'Lead her through the hedges to the big flower']],
+  [['✨', 'The flowers sing a short melody of light'],
+   ['👀', 'Watch closely which ones glow, and in what order'],
+   ['🎵', 'Tap the same order back. Five gentle rounds!']]
 ];
 var WIN_MESSAGES = [
-  'You make ordinary days feel extraordinary.',
-  'Every little moment with you is worth keeping.',
-  'I still get excited every time I think about you.',
-  'Thank you for making my world brighter.',
-  'The garden’s heart is ready to bloom…'
+  'Somehow, you turn my most ordinary days into my favorite ones.',
+  'If I could, I’d bottle up every little moment with you and keep them all.',
+  'It’s been a while now… and I still get butterflies just thinking about you.',
+  'My world got so much brighter the day you wandered into it.',
+  'Do you feel that? The whole garden is holding its breath…'
 ];
 
 function hudTop(app){ return app.safeTop + 66; }
+
+/* one flower species per quest, so the garden feels hand-planted */
+var QUEST_SPECIES = [1, 0, 2, 3, 0];
 
 /* ============================================================
    WinFX — shared victory bloom overlay
@@ -78,32 +98,64 @@ var WinFX = {
     var cx = W / 2, cy = H * 0.42;
     var bloom = easeOutCubic(Math.min(1, t / 1.25));
     var size = Math.min(W * 0.28, 130);
+    var i, a, grad;
 
-    // rotating light rays
+    // opening flash of light
+    if (t < 0.45){
+      var flash = 1 - t / 0.45;
+      Art.glow(ctx, cx, cy, size * (1 + (1 - flash) * 3), '#fff6dd', flash * 0.9);
+    }
+
+    // rotating god rays
     ctx.save();
     ctx.translate(cx, cy);
-    var rayA = Math.min(0.35, t * 0.4);
-    for (var i = 0; i < 10; i++){
-      var a = t * 0.35 + i * TAU / 10;
+    var rayA = Math.min(0.4, t * 0.45);
+    for (i = 0; i < 12; i++){
+      a = t * 0.3 + i * TAU / 12;
+      var w = (i % 2 === 0) ? size * 0.22 : size * 0.1;
       ctx.save();
       ctx.rotate(a);
-      var grad = ctx.createLinearGradient(0, 0, 0, -H * 0.42);
-      grad.addColorStop(0, 'rgba(255,222,170,' + (rayA * 0.5).toFixed(3) + ')');
-      grad.addColorStop(1, 'rgba(255,222,170,0)');
+      grad = ctx.createLinearGradient(0, 0, 0, -H * 0.46);
+      grad.addColorStop(0, 'rgba(255,224,170,' + (rayA * (i % 2 ? 0.35 : 0.55)).toFixed(3) + ')');
+      grad.addColorStop(1, 'rgba(255,224,170,0)');
       ctx.fillStyle = grad;
       ctx.beginPath();
       ctx.moveTo(0, 0);
-      ctx.lineTo(-size * 0.18, -H * 0.42);
-      ctx.lineTo(size * 0.18, -H * 0.42);
+      ctx.lineTo(-w, -H * 0.46);
+      ctx.lineTo(w, -H * 0.46);
       ctx.closePath();
       ctx.fill();
       ctx.restore();
     }
     ctx.restore();
 
-    Art.glow(ctx, cx, cy, size * 2.6, '#ffd9ec', 0.7 * bloom);
+    // expanding light rings
+    for (i = 0; i < 2; i++){
+      var rt = (t - 0.15 - i * 0.35);
+      if (rt > 0 && rt < 1.1){
+        var rr = easeOutCubic(rt / 1.1) * size * 2.6;
+        ctx.save();
+        ctx.globalAlpha = (1 - rt / 1.1) * 0.55;
+        ctx.strokeStyle = '#ffdff0';
+        ctx.lineWidth = 3 - i;
+        ctx.beginPath();
+        ctx.arc(cx, cy, rr, 0, TAU);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    Art.glow(ctx, cx, cy, size * 2.6, '#ffd9ec', 0.75 * bloom);
     Art.flowerHead(ctx, cx, cy, size, FLOWER_COLORS[this.idx % FLOWER_COLORS.length],
-      bloom, Math.sin(t * 0.8) * 0.05);
+      bloom, Math.sin(t * 0.8) * 0.05, QUEST_SPECIES[this.idx % QUEST_SPECIES.length]);
+
+    // orbiting sparkles
+    for (i = 0; i < 5; i++){
+      a = t * 1.4 + i * TAU / 5;
+      var orb = size * (1.35 + 0.12 * Math.sin(t * 2 + i));
+      Art.sparkleStar(ctx, cx + Math.cos(a) * orb, cy + Math.sin(a) * orb * 0.8,
+        5, 'rgba(255,244,214,0.9)', t * 3 + i);
+    }
   }
 };
 
@@ -555,6 +607,7 @@ var Games = (function(){
         var self = this;
 
         if (first.d === d){
+          // a matched pair stays revealed forever
           setTimeout(function(){
             first.card.classList.add('matched');
             card.classList.add('matched');
@@ -1047,7 +1100,8 @@ var Games = (function(){
           if (g > 0) Art.glow(ctx, p.x, p.y, 95, '#fff2c9', g * 0.9);
           Art.flowerHead(ctx, p.x, p.y, 40 * (1 + g * 0.2),
             FLOWER_COLORS[this.SIMON_COLS[i]], 1,
-            Math.sin(app.t * 0.7 + i * 2) * 0.06);
+            Math.sin(app.t * 0.7 + i * 2) * 0.06,
+            [0, 1, 3, 2, 0][i]);
         }
 
         if (this.state !== 'intro'){
