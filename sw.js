@@ -1,6 +1,6 @@
 /* Mannou's Garden Quest — service worker (offline support) */
 
-var CACHE = 'mgq-v2';
+var CACHE = 'mgq-v3';
 var ASSETS = [
   './',
   './index.html',

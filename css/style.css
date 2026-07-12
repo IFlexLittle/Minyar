@@ -543,6 +543,8 @@ body[data-scene="ending"] #blossomBar{ opacity:0; }
 .letter-body{
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
+  touch-action:pan-y;
+  overscroll-behavior:contain;
   font-family:var(--font-hand);
   font-size:19px;
   line-height:1.55;

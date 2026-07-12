@@ -1109,8 +1109,14 @@ var endingScene = {
   canvas.addEventListener('pointerup', endPointer);
   canvas.addEventListener('pointercancel', endPointer);
 
-  // stop iOS rubber-band scrolling / double-tap zoom on the stage
+  // stop iOS rubber-band scrolling / double-tap zoom on the stage —
+  // but let scrollable overlays (the letter) scroll normally
   document.getElementById('stage').addEventListener('touchmove', function(e){
+    var t = e.target;
+    while (t && t !== document.body){
+      if (t.classList && t.classList.contains('letter-body')) return;
+      t = t.parentNode;
+    }
     e.preventDefault();
   }, { passive: false });
   document.addEventListener('gesturestart', function(e){ e.preventDefault(); });
